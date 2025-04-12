@@ -245,10 +245,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOD, LD4_Pin|LD3_Pin|LD5_Pin|LD6_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : USER_Button_Pin */
-  GPIO_InitStruct.Pin = USER_Button_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  HAL_GPIO_Init(USER_Button_GPIO_Port, &GPIO_InitStruct);
+
 
   /*Configure GPIO pin : BOOT1_Pin */
   GPIO_InitStruct.Pin = BOOT1_Pin;

@@ -9,23 +9,31 @@
 
 
 /* -----------------------------------------------------------------------
- 1-DEFINE VARIABLES with functions
+ 1-DECLARE VARIABLES AND INSTALL THEM
+ eg: IO Valve;
+ 	 void setup(void) {
+ 	 Valve= install_digital_output(your arguments)
+ 	 }
+
  2-DEFINE LOGIC in functions
- 3-REGISTER LOGIC functions
+
 
  -------------------------------------------------------------------------*/
 /*CODE STARTS HERE*/
-PLC_IO_t* Valve;
+IO Valve;
+IO Button;
 void setup (void ) {
 	Valve =install_digital_output("Valve", GPIO_PIN_12);
-
+	Button=install_digital_input("Button", GPIO_PIN_0);
 }
 
 void loop(void) {
-	set_digital_output(Valve, GPIO_PIN_SET);
-	vTaskDelay(pdMS_TO_TICKS(200));
-	set_digital_output(Valve, GPIO_PIN_RESET);
-	vTaskDelay(pdMS_TO_TICKS(200));
+	if(Button->value==GPIO_PIN_SET) {
+		Valve->value=GPIO_PIN_SET;
+	}
+	else {
+		Valve->value=GPIO_PIN_RESET;
+	}
 
 
 }

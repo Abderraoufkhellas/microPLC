@@ -15,6 +15,17 @@
 #include "task.h"
 #include "UserApplication.h"
 
+
+
+extern uint8_t Digital_Inputs_count ;
+extern uint8_t Digital_Outputs_count ;
+extern uint8_t Analog_Inputs_count ;
+extern uint8_t Digital_memory_count ;
+extern uint8_t Register_memory_count;
+
+
+
+
 // TO DO
 
 /*implement datatypes HAL CONFIG functions */
@@ -31,7 +42,7 @@
 PLC_IO_t* install_digital_input(const char *VarName,uint16_t pin);
 PLC_IO_t* install_digital_output(const char *VarName,uint16_t pin);
 PLC_IO_t* add_internal_bool(const char *VarName);
-
+PLC_IO_t* add_internal_reg(const char *VarName);
 
 //LOGIC functions
 void set_digital_output(PLC_IO_t* io, uint32_t VALUE);
