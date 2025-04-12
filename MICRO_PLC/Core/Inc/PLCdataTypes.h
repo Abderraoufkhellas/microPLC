@@ -8,12 +8,26 @@
 #ifndef INC_PLCDATATYPES_H_
 #define INC_PLCDATATYPES_H_
 
+
 #include "main.h"
 
+//DATA SIZE DEFINES
+#define MAX_DIGITAL_IO_VARIABLES 4
+#define MAX_ANALOG_IO_VARIABLE 2
+#define MAX_DIGITAL_MEMORY_VARIABLES 20
+#define MAX_REGISTER_MEMORY_VARIABLES 20
+
+//Setting a macro to make data definition easier for the user
+#define IO PLC_IO_t*
+#define MEM PLC_IO_t*
 
 /*DATA TYPE ENUM
  EXPLANATION : these are the types the user can use
 */
+
+
+
+
 typedef enum PLC_data_t {
 	DIGITAL_IN_t,
 	DIGITAL_OUT_t,
@@ -31,8 +45,8 @@ typedef enum PLC_data_t {
  * THIS IS TEMPORARY (Can change later) !!!!!!!!!!!!!!!!!!!!!
 
  */
-typedef enum PLC_Pin {
-	DIN1,
+typedef enum {
+	DIN1,				//temporarely
 	DIN2,
 	DIN3,
 	DIN4,
@@ -46,22 +60,36 @@ typedef enum PLC_Pin {
 /* PLC DATA TYPES */
 
 typedef struct {
+	char name[16];
 	PLC_data_t type;
-    PLC_Pin pinNumber;
+    uint16_t pinNumber;
     uint32_t value;  // HERE ALL values are uint32_t (even digital) Search for better solution!!!
 } PLC_IO_t;
 
 
 
+/* PLC data map*/
+//useful for accessing data from other tasks such as modbus or display task
 
 
+typedef struct {
+	PLC_IO_t DIGITAL_INPUTS[MAX_DIGITAL_IO_VARIABLES];
+	PLC_IO_t DIGITAL_OUTPUTS[MAX_DIGITAL_IO_VARIABLES];
+	PLC_IO_t ANALOG_INPUTS[MAX_ANALOG_IO_VARIABLE ];
+	PLC_IO_t ANALOG_OUTPUTS[MAX_ANALOG_IO_VARIABLE ];
+	PLC_IO_t INTERNAL_DIGITAL_MEM[MAX_DIGITAL_MEMORY_VARIABLES];
+	PLC_IO_t INTERNAL_REGISTER_MEM[MAX_REGISTER_MEMORY_VARIABLES];
+
+} PLC_IO_map;
+
+//declare a global data map across all files
+extern PLC_IO_map PLC_Data_map;
 
 
-
-
-// TO DO
-
-/*implement datatypes HAL CONFIG functions */
+typedef enum {
+	INPUT,
+	OUTPUT
+}Direction_t;
 
 
 

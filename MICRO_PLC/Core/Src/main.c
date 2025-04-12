@@ -22,6 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "PLClogic.h"
 
 /* USER CODE END Includes */
 
@@ -117,7 +118,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-
+  setup();
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -244,10 +245,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOD, LD4_Pin|LD3_Pin|LD5_Pin|LD6_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : USER_Button_Pin */
-  GPIO_InitStruct.Pin = USER_Button_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  HAL_GPIO_Init(USER_Button_GPIO_Port, &GPIO_InitStruct);
+
 
   /*Configure GPIO pin : BOOT1_Pin */
   GPIO_InitStruct.Pin = BOOT1_Pin;
@@ -256,11 +254,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(BOOT1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LD4_Pin LD3_Pin LD5_Pin LD6_Pin */
-  GPIO_InitStruct.Pin = LD4_Pin|LD3_Pin|LD5_Pin|LD6_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
@@ -288,6 +282,7 @@ __weak void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
+
     osDelay(1);
   }
   /* USER CODE END 5 */

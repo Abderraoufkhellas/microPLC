@@ -31,9 +31,6 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include  "PLClogic.h"
-#include "Display.h"
-#include "PLCdataTypes.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -82,6 +79,8 @@ void Error_Handler(void);
 #define SWCLK_GPIO_Port GPIOA
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
+
+
 
 /* USER CODE BEGIN Private defines */
 
