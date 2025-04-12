@@ -17,6 +17,10 @@
 #define MAX_DIGITAL_MEMORY_VARIABLES 20
 #define MAX_REGISTER_MEMORY_VARIABLES 20
 
+//Setting a macro to make data definition easier for the user
+#define IO PLC_IO_t*
+#define MEM PLC_IO_t*
+
 /*DATA TYPE ENUM
  EXPLANATION : these are the types the user can use
 */
@@ -61,6 +65,7 @@ typedef struct {
     uint16_t pinNumber;
     uint32_t value;  // HERE ALL values are uint32_t (even digital) Search for better solution!!!
 } PLC_IO_t;
+
 
 
 /* PLC data map*/

@@ -27,9 +27,14 @@
  */
 //add more arguments later like modbus address
 
+//INSTALL functions
 PLC_IO_t* install_digital_input(const char *VarName,uint16_t pin);
 PLC_IO_t* install_digital_output(const char *VarName,uint16_t pin);
-void set_output(PLC_IO_t* io, uint32_t VALUE);
+PLC_IO_t* add_internal_bool(const char *VarName);
+
+
+//LOGIC functions
+void set_digital_output(PLC_IO_t* io, uint32_t VALUE);
 //PLC LOGIC task definition:
 void StartPLC_LOGIC(void *argument);
 

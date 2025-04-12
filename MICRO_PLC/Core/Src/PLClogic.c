@@ -11,7 +11,7 @@ static uint8_t Digital_Inputs_count =0;
 static uint8_t Digital_Outputs_count =0;
 static uint8_t Analog_Inputs_count =0;
 static uint8_t Digital_memory_count =0;
-static uint8_t Register_Inputs_count =0;
+static uint8_t Register_memory_count =0;
 
 /*PLC DATA INSTALL FUNCTIONS IMPLEMENTATION */
 
@@ -66,8 +66,30 @@ PLC_IO_t* install_digital_output(const char *VarName,uint16_t pin){
 
 }
 
+PLC_IO_t* add_internal_bool(const char *VarName) {
+	if (Digital_memory_count >= MAX_DIGITAL_MEMORY_VARIABLES) {
+		Error_Handler();
+	}
+	PLC_IO_t* New= &PLC_Data_map.INTERNAL_DIGITAL_MEM[Digital_memory_count++];
+	strncpy(New->name,VarName,sizeof(New->name));
+	New->name[sizeof(New->name)-1]='\0';
+	New->type=INTERNAL_BOOL_t;
+	New->value=0; //recheck this value init later
+	return New;
+}
 
 
+PLC_IO_t* add_internal_reg(const char *VarName) {
+	if (Register_memory_count >= MAX_REGISTER_MEMORY_VARIABLES) {
+		Error_Handler();
+	}
+	PLC_IO_t* New= &PLC_Data_map.INTERNAL_DIGITAL_MEM[Digital_memory_count++];
+	strncpy(New->name,VarName,sizeof(New->name));
+	New->name[sizeof(New->name)-1]='\0';
+	New->type=INTERNAL_REGISTER_t;
+	New->value=0; //recheck this value init later
+	return New;
+}
 
 
 
