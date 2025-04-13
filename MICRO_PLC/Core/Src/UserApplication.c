@@ -23,16 +23,18 @@
 IO Valve;
 IO Valve2;
 IO Button;
+
+TIM TIMER1;
 void setup (void ) {
 	Valve =install_digital_output(GPIO_PIN_12);
 	Valve2 =install_digital_output(GPIO_PIN_13);
 	Button=install_digital_input(GPIO_PIN_0);
-
-
+	TIMER1=add_TOFF(2000);
 }
 
 void loop(void) {
-	Valve->value=Button->value;
-	Valve2->value=Button->value;
+
+	TIMER1->IN=Button->value;
+	Valve->value=TIMER1->Q;
 
 }
