@@ -22,17 +22,19 @@
 /*CODE STARTS HERE*/
 IO Valve;
 IO Button;
+
 void setup (void ) {
 	Valve =install_digital_output("Valve", GPIO_PIN_12);
 	Button=install_digital_input("Button", GPIO_PIN_0);
+
 }
 
 void loop(void) {
-	if(Button->value==GPIO_PIN_SET) {
-		Valve->value=GPIO_PIN_SET;
+	if(Button->value==1) {
+		Valve->value=1;
 	}
 	else {
-		Valve->value=GPIO_PIN_RESET;
+		Valve->value=0;
 	}
 
 
