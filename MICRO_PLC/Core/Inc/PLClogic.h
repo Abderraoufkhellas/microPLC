@@ -10,7 +10,7 @@
 
 #include "main.h"
 #include "PLCdataTypes.h"
-#include <string.h>
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "UserApplication.h"
@@ -39,10 +39,10 @@ extern uint8_t Register_memory_count;
 //add more arguments later like modbus address
 
 //INSTALL functions
-PLC_IO_t* install_digital_input(const char *VarName,uint16_t pin);
-PLC_IO_t* install_digital_output(const char *VarName,uint16_t pin);
-PLC_IO_t* add_internal_bool(const char *VarName);
-PLC_IO_t* add_internal_reg(const char *VarName);
+PLC_IO_t* install_digital_input(uint16_t pin);
+PLC_IO_t* install_digital_output(uint16_t pin);
+PLC_MEM_t* add_internal_bool(void);
+PLC_MEM_t* add_internal_reg(void);
 
 //LOGIC functions
 void set_digital_output(PLC_IO_t* io, uint32_t VALUE);

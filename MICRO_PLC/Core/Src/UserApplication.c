@@ -21,21 +21,18 @@
  -------------------------------------------------------------------------*/
 /*CODE STARTS HERE*/
 IO Valve;
+IO Valve2;
 IO Button;
-
 void setup (void ) {
-	Valve =install_digital_output("Valve", GPIO_PIN_12);
-	Button=install_digital_input("Button", GPIO_PIN_0);
+	Valve =install_digital_output(GPIO_PIN_12);
+	Valve2 =install_digital_output(GPIO_PIN_13);
+	Button=install_digital_input(GPIO_PIN_0);
+
 
 }
 
 void loop(void) {
-	if(Button->value==1) {
-		Valve->value=1;
-	}
-	else {
-		Valve->value=0;
-	}
-
+	Valve->value=Button->value;
+	Valve2->value=Button->value;
 
 }
