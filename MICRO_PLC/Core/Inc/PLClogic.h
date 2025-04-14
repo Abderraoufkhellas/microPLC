@@ -29,6 +29,10 @@ extern uint8_t Timer_count;
 //To check if Timers are used at all to not use ressources
 extern uint8_t TIMERS_USED;
 
+// MACROS FOR LOGIC FUNCTIONS
+#define OR ||
+#define AND &&
+#define NOT !
 // TO DO
 
 /*implement datatypes HAL CONFIG functions */
