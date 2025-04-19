@@ -32,16 +32,12 @@ void setup (void ) {
 	Valve =install_digital_output(GPIO_PIN_12);
 	Valve2 =install_digital_output(GPIO_PIN_13);
 	Button=install_digital_input(GPIO_PIN_0);
-	TIMER1=add_TOFF(2000);
+	TIMER1=add_TON(2000);
 
 }
 
 void loop(void) {
 
-	if (NOT Button->value){
-		Valve->value=1;
-	}
-	else {
-		Valve->value=0;
-	}
+	TIMER1->IN=Button->value;
+	Valve->value=TIMER1->Q;
 }
