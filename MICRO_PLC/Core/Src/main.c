@@ -331,6 +331,7 @@ static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /* USER CODE END MX_GPIO_Init_1 */
 
