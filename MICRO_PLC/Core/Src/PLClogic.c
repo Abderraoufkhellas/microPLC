@@ -5,7 +5,7 @@
  *      Author: pc
  */
 #include "PLClogic.h"
-
+#include <stdio.h>
 //to check for available pins
 uint8_t Digital_Inputs_count =0;
 uint8_t Digital_Outputs_count =0;
@@ -19,7 +19,7 @@ uint8_t TIMERS_USED=0;
 /*PLC DATA INSTALL FUNCTIONS IMPLEMENTATION */
 
 
-PLC_IO_t* install_digital_input(uint16_t pin){
+PLC_IO_t* install_digital_input(const char* Name,uint16_t pin){
 	if (Digital_Inputs_count >= MAX_DIGITAL_IO_VARIABLES) {
 		Error_Handler(); //implement error checks later// check if limit is passed
 	}
@@ -28,6 +28,7 @@ PLC_IO_t* install_digital_input(uint16_t pin){
 	New->type=DIGITAL_IN_t;
 	New->pinNumber=pin;
 	New->value=0; //recheck this value init later
+	snprintf(New->handle,sizeof(New->handle),Name);	/*configure the pin */
     /*configure the pin */
 	GPIO_InitTypeDef GPIO_cfg = {0};
 	GPIO_cfg.Pin = New->pinNumber;
@@ -43,7 +44,7 @@ PLC_IO_t* install_digital_input(uint16_t pin){
 
 
 
-PLC_IO_t* install_digital_output(uint16_t pin){
+PLC_IO_t* install_digital_output(const char* Name,uint16_t pin){
 	if (Digital_Outputs_count >= MAX_DIGITAL_IO_VARIABLES) {
 		Error_Handler(); //implement error checks later// check if limit is passed
 	}
@@ -52,7 +53,8 @@ PLC_IO_t* install_digital_output(uint16_t pin){
 	New->type=DIGITAL_OUT_t;
 	New->pinNumber=pin;
 	New->value=0; //recheck this value init later
-    /*configure the pin */
+	snprintf(New->handle,sizeof(New->handle),Name);
+	/*configure the pin */
 	GPIO_InitTypeDef GPIO_cfg = {0};
 	GPIO_cfg.Pin = New->pinNumber;
 	GPIO_cfg.Mode = GPIO_MODE_OUTPUT_PP;
@@ -65,24 +67,27 @@ PLC_IO_t* install_digital_output(uint16_t pin){
 
 }
 
-PLC_MEM_t* add_internal_bool(void) {
+PLC_MEM_t* add_internal_bool(const char* Name) {
 	if (Digital_memory_count >= MAX_DIGITAL_MEMORY_VARIABLES) {
 		Error_Handler();
 	}
 	PLC_MEM_t* New= &PLC_Data_map.INTERNAL_DIGITAL_MEM[Digital_memory_count++];
 	New->type=INTERNAL_BOOL_t;
 	New->value=0; //recheck this value init later
+	snprintf(New->handle,sizeof(New->handle),Name);
+
 	return New;
 }
 
 
-PLC_MEM_t* add_internal_reg(void) {
+PLC_MEM_t* add_internal_reg(const char* Name) {
 	if (Register_memory_count >= MAX_REGISTER_MEMORY_VARIABLES) {
 		Error_Handler();
 	}
 	PLC_MEM_t* New= &PLC_Data_map.INTERNAL_DIGITAL_MEM[Digital_memory_count++];
 	New->type=INTERNAL_REGISTER_t;
 	New->value=0; //recheck this value init later
+	snprintf(New->handle,sizeof(New->handle),Name);
 	return New;
 }
 

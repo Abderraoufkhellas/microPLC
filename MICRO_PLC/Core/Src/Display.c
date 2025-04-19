@@ -5,7 +5,7 @@
  *      Author: pc
  */
 
-
+#include "Display.h"
 //Display task implementation
 
 void StartDISPLAY_Task(void *argument)
@@ -14,7 +14,7 @@ void StartDISPLAY_Task(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    vTaskDelay(pdMS_TO_TICKS(1));
   }
   /* USER CODE END StartDISPLAY_Task */
 }

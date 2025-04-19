@@ -29,9 +29,8 @@ TIM TIMER2;
 
 
 void setup (void ) {
-	Valve =install_digital_output(GPIO_PIN_12);
-	Valve2 =install_digital_output(GPIO_PIN_13);
-	Button=install_digital_input(GPIO_PIN_0);
+	Valve= install_digital_output("Valve1", GPIO_PIN_14);
+	Button= install_digital_output("Button",GPIO_PIN_0);
 	TIMER1=add_TON(2000);
 
 }

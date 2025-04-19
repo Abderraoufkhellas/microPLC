@@ -46,10 +46,10 @@ extern uint8_t TIMERS_USED;
 //add more arguments later like modbus address
 
 //INSTALL functions
-PLC_IO_t* install_digital_input(uint16_t pin);
-PLC_IO_t* install_digital_output(uint16_t pin);
-PLC_MEM_t* add_internal_bool(void);
-PLC_MEM_t* add_internal_reg(void);
+PLC_IO_t* install_digital_input(const char* Name,uint16_t pin);
+PLC_IO_t* install_digital_output(const char* Name,uint16_t pin);
+PLC_MEM_t* add_internal_bool(const char* Name) ;
+PLC_MEM_t* add_internal_reg(const char* Name);
 PLC_Timer_t* add_TOFF(uint32_t preset_time);
 PLC_Timer_t* add_TON(uint32_t preset_time);
 void PLC_Timer_Update(void);
