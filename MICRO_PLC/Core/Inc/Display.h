@@ -14,6 +14,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#define MAX_MENU_SIZE 5
+
 
 //Menu Item struct: Represents a single menu Item:
 
@@ -24,9 +26,9 @@ typedef struct MenuItem {
 }MenuItem;
 
 //declaring MenuItems
-MenuItem IOlistItem;
-MenuItem ForceDataItem;
-MenuItem BackItem;
+const MenuItem DataListItem;
+const MenuItem ForceDataItem;
+const MenuItem BackItem;
 
 
 //declaring Menus
