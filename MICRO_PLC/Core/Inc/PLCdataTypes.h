@@ -61,12 +61,14 @@ typedef enum {
 /* PLC DATA TYPES */
 
 typedef struct {
+	char handle[16];
 	PLC_data_t type;
     uint16_t pinNumber;
     uint32_t value;  // HERE ALL values are uint32_t (even digital) Search for better solution!!!
 } PLC_IO_t;
 
 typedef struct {
+	char handle[16];
 	PLC_data_t type;
 	uint32_t value; // HERE ALL values are uint32_t (even digital) Search for better solution!!!
 } PLC_MEM_t;
@@ -83,6 +85,7 @@ typedef enum {
 //adding timer datatype
 typedef struct {
 	TIMER_TYPE type;
+	char handle[16];
 	bool IN;
 	bool Q;
 	uint32_t ET;
