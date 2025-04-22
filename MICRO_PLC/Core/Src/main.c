@@ -23,7 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "PLClogic.h"
-
+#include "Display.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -33,6 +33,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define DEBOUNCE_TIME_MS 200
+
 
 /* USER CODE END PD */
 
@@ -68,13 +70,18 @@ const osThreadAttr_t DISPLAY_Task_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for ButtonQueue */
+osMessageQueueId_t ButtonQueueHandle;
+const osMessageQueueAttr_t ButtonQueue_attributes = {
+  .name = "ButtonQueue"
+};
 /* Definitions for PLC_IO_Database */
 osMutexId_t PLC_IO_DatabaseHandle;
 const osMutexAttr_t PLC_IO_Database_attributes = {
   .name = "PLC_IO_Database"
 };
 /* USER CODE BEGIN PV */
-
+uint32_t lastPressTick[4]={0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -153,6 +160,10 @@ int main(void)
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of ButtonQueue */
+  ButtonQueueHandle = osMessageQueueNew (8, sizeof(BUTTON_INPUT), &ButtonQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -331,7 +342,6 @@ static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
-  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /* USER CODE END MX_GPIO_Init_1 */
 
@@ -340,6 +350,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
@@ -366,6 +377,25 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(BOOT1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Down_PushButton_Pin UP_PushButton_Pin */
+  GPIO_InitStruct.Pin = Down_PushButton_Pin|UP_PushButton_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Select_PushButton_Pin Back_PushButton_Pin */
+  GPIO_InitStruct.Pin = Select_PushButton_Pin|Back_PushButton_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -453,8 +483,35 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   {
 	  PLC_Timer_Update();
   }
-  /* USER CODE END Callback 1 */
 }
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+    BUTTON_INPUT b;
+    uint8_t index;
+
+    switch (GPIO_Pin) {
+        case UP_PushButton_Pin:
+            b = UP_BUTTON; index = 0;
+            break;
+        case Down_PushButton_Pin:
+            b = DOWN_BUTTON; index = 1;
+            break;
+        case Select_PushButton_Pin:
+            b = SELECT_BUTTON; index = 2;
+            break;
+        case Back_PushButton_Pin:
+            b = BACK_BUTTON; index = 3;
+            break;
+        default:
+            return;
+    }
+
+    uint32_t now = HAL_GetTick();
+    if ((now - lastPressTick[index]) < DEBOUNCE_TIME_MS) return;  // debounce!
+    lastPressTick[index] = now;
+
+    osMessageQueuePut(ButtonQueueHandle, &b, 0, 0);
+}
+  /* USER CODE END Callback 1 */
 
 /**
   * @brief  This function is executed in case of error occurrence.

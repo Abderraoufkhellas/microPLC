@@ -31,6 +31,8 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "cmsis_os.h"
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -60,6 +62,18 @@ void Error_Handler(void);
 #define PH1_OSC_OUT_GPIO_Port GPIOH
 #define BOOT1_Pin GPIO_PIN_2
 #define BOOT1_GPIO_Port GPIOB
+#define Down_PushButton_Pin GPIO_PIN_14
+#define Down_PushButton_GPIO_Port GPIOB
+#define Down_PushButton_EXTI_IRQn EXTI15_10_IRQn
+#define UP_PushButton_Pin GPIO_PIN_15
+#define UP_PushButton_GPIO_Port GPIOB
+#define UP_PushButton_EXTI_IRQn EXTI15_10_IRQn
+#define Select_PushButton_Pin GPIO_PIN_8
+#define Select_PushButton_GPIO_Port GPIOD
+#define Select_PushButton_EXTI_IRQn EXTI9_5_IRQn
+#define Back_PushButton_Pin GPIO_PIN_9
+#define Back_PushButton_GPIO_Port GPIOD
+#define Back_PushButton_EXTI_IRQn EXTI9_5_IRQn
 #define SWDIO_Pin GPIO_PIN_13
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin GPIO_PIN_14
@@ -68,6 +82,7 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
+extern osMessageQueueId_t ButtonQueueHandle;
 
 /* USER CODE END Private defines */
 

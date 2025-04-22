@@ -13,29 +13,34 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
-
-#define MAX_MENU_SIZE 5
-
+#include "cmsis_os.h"
+#define SCREEN_AUTO_REFRESH_MS 5000
+#define MAIN_MENU_COUNT 3
+#define MAX_MENU_DEPTH 5
 
 //Menu Item struct: Represents a single menu Item:
 
 typedef struct MenuItem {
 	char Title[16];
 	struct MenuItem *SubMenu;
+	uint8_t subSize;
 	void (*action)(void);
 }MenuItem;
 
 //declaring MenuItems
-const MenuItem DataListItem;
-const MenuItem ForceDataItem;
-const MenuItem BackItem;
+
 
 
 //declaring Menus
-MenuItem MainMenu[];
-MenuItem IOsubMenu[];
 
 
+//Adding buttons
+typedef enum {
+	UP_BUTTON,
+	DOWN_BUTTON,
+	SELECT_BUTTON,
+	BACK_BUTTON
+}BUTTON_INPUT;
 
 //Display task definition
 
