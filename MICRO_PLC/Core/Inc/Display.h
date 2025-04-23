@@ -14,10 +14,19 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "cmsis_os.h"
-#define SCREEN_AUTO_REFRESH_MS 5000
-#define MAIN_MENU_COUNT 3
+#define SCREEN_AUTO_REFRESH_MS 2000
+#define RT_VIEW_REFRESH 150
+#define MAIN_MENU_COUNT 2
 #define MAX_MENU_DEPTH 5
 
+
+#define MENU_X             10
+#define MENU_Y             20
+#define MENU_LINE_HEIGHT   20
+#define MENU_WIDTH        (240 - 2*MENU_X)  // e.g. full-width on a 240×320
+#define COLOR_TEXT        WHITE
+#define COLOR_HIGHLIGHT   BLACK
+#define COLOR_BG_NORMAL   BLACK
 //Menu Item struct: Represents a single menu Item:
 
 typedef struct MenuItem {
@@ -27,11 +36,16 @@ typedef struct MenuItem {
 	void (*action)(void);
 }MenuItem;
 
-//declaring MenuItems
 
+//DISPLAY STATE MACHINE
+typedef enum {
+	DISP_MENU,
+	DISP_RT_VIEW,
+	DISP_FORCE_VIEW
+}CURRENT_STATE;
 
+extern CURRENT_STATE Current_Display_State;
 
-//declaring Menus
 
 
 //Adding buttons

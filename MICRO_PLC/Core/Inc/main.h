@@ -83,6 +83,7 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN Private defines */
 extern osMessageQueueId_t ButtonQueueHandle;
+extern osMutexId_t PLC_IO_DatabaseHandle;
 
 /* USER CODE END Private defines */
 

@@ -178,8 +178,10 @@ void StartPLC_LOGIC(void *argument){
   {
 	  //LOOP on inputs
 	  for (int i=0;i < Digital_Inputs_count;i++) {
+		  osMutexAcquire(PLC_IO_DatabaseHandle,portMAX_DELAY);
 		  PLC_IO_t* io= &PLC_Data_map.DIGITAL_INPUTS[i];
 		  io->value= HAL_GPIO_ReadPin(GPIOA, io->pinNumber); //port is hard coded-change
+		  osMutexRelease(PLC_IO_DatabaseHandle);
 	  }
 	  //implement analog reading later
 
@@ -204,8 +206,11 @@ void StartPLC_LOGIC(void *argument){
 
 	  //LOOP on outputs
 	  	  for (int j=0;j < Digital_Outputs_count;j++) {
+			  osMutexAcquire(PLC_IO_DatabaseHandle,portMAX_DELAY);
 	  		  PLC_IO_t* o= &PLC_Data_map.DIGITAL_OUTPUTS[j];
 	  		  HAL_GPIO_WritePin(GPIOD, o->pinNumber, o->value); //port is hard coded-change
+			  osMutexRelease(PLC_IO_DatabaseHandle);
+
   }
 	  vTaskDelay(pdMS_TO_TICKS(PLC_SCAN_CYCLE)); //PLC delay
 
