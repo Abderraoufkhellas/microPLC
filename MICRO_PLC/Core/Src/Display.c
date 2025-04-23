@@ -52,37 +52,39 @@ void Display_PLC_DATA(void) {
 		  	osMutexAcquire(PLC_IO_DatabaseHandle,portMAX_DELAY);
 	        PLC_IO_t *io = &PLC_Data_map.DIGITAL_INPUTS[i];
 	        snprintf(buf, sizeof(buf), "%s: %u", io->handle, io->value);
-	        ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
 	        osMutexRelease(PLC_IO_DatabaseHandle);
+
+	        ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
 	    }
 	  for (int j = 0; j < Digital_Outputs_count; j++, y += MENU_LINE_HEIGHT) {
 		  	osMutexAcquire(PLC_IO_DatabaseHandle,portMAX_DELAY);
 			PLC_IO_t *io = &PLC_Data_map.DIGITAL_OUTPUTS[j];
 			snprintf(buf, sizeof(buf), "%s: %u", io->handle, io->value);
-			ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
 	        osMutexRelease(PLC_IO_DatabaseHandle);
+
+			ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
 		}
 	  for (int k = 0; k < Analog_Inputs_count; k++, y += MENU_LINE_HEIGHT) {
 		  	osMutexAcquire(PLC_IO_DatabaseHandle,portMAX_DELAY);
 			PLC_IO_t *io = &PLC_Data_map.ANALOG_INPUTS[k];
 			snprintf(buf, sizeof(buf), "%s: %u", io->handle, io->value);
-			ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
 	        osMutexRelease(PLC_IO_DatabaseHandle);
+			ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
 
 		}
 	  for (int l = 0; l < Digital_memory_count; l++, y += MENU_LINE_HEIGHT) {
 		  	osMutexAcquire(PLC_IO_DatabaseHandle,portMAX_DELAY);
 			PLC_MEM_t *io = &PLC_Data_map.INTERNAL_DIGITAL_MEM[l];
 			snprintf(buf, sizeof(buf), "%s: %u", io->handle, io->value);
-			ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
 	        osMutexRelease(PLC_IO_DatabaseHandle);
+			ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
 		}
 	  for (int m = 0; m < Register_memory_count; m++, y += MENU_LINE_HEIGHT) {
 		  	osMutexAcquire(PLC_IO_DatabaseHandle,portMAX_DELAY);
 			PLC_MEM_t *io = &PLC_Data_map.INTERNAL_REGISTER_MEM[m];
 			snprintf(buf, sizeof(buf), "%s: %u", io->handle, io->value);
-			ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
 	        osMutexRelease(PLC_IO_DatabaseHandle);
+			ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
 
 		}
 

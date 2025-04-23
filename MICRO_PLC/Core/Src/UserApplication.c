@@ -25,7 +25,7 @@ IO Valve2;
 IO Button;
 
 TIM TIMER1;
-TIM TIMER2;
+//TIM TIMER2;
 
 
 void setup (void ) {
