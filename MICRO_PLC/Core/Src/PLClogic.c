@@ -15,7 +15,7 @@ uint8_t Register_memory_count =0;
 uint8_t Timer_count=0;
 
 uint8_t TIMERS_USED=0;
-
+uint8_t forceEnabled=0;
 /*PLC DATA INSTALL FUNCTIONS IMPLEMENTATION */
 
 
@@ -28,6 +28,7 @@ PLC_IO_t* install_digital_input(const char* Name,uint16_t pin){
 	New->type=DIGITAL_IN_t;
 	New->pinNumber=pin;
 	New->value=0; //recheck this value init later
+	New->force=0;
 	snprintf(New->handle,sizeof(New->handle),Name);	/*configure the pin */
     /*configure the pin */
 	GPIO_InitTypeDef GPIO_cfg = {0};
@@ -53,6 +54,7 @@ PLC_IO_t* install_digital_output(const char* Name,uint16_t pin){
 	New->type=DIGITAL_OUT_t;
 	New->pinNumber=pin;
 	New->value=0; //recheck this value init later
+	New->force=0;
 	snprintf(New->handle,sizeof(New->handle),Name);
 	/*configure the pin */
 	GPIO_InitTypeDef GPIO_cfg = {0};
@@ -74,6 +76,7 @@ PLC_MEM_t* add_internal_bool(const char* Name) {
 	PLC_MEM_t* New= &PLC_Data_map.INTERNAL_DIGITAL_MEM[Digital_memory_count++];
 	New->type=INTERNAL_BOOL_t;
 	New->value=0; //recheck this value init later
+	New->force=0;
 	snprintf(New->handle,sizeof(New->handle),Name);
 
 	return New;
@@ -87,6 +90,7 @@ PLC_MEM_t* add_internal_reg(const char* Name) {
 	PLC_MEM_t* New= &PLC_Data_map.INTERNAL_DIGITAL_MEM[Digital_memory_count++];
 	New->type=INTERNAL_REGISTER_t;
 	New->value=0; //recheck this value init later
+	New->force=0;
 	snprintf(New->handle,sizeof(New->handle),Name);
 	return New;
 }
@@ -177,11 +181,34 @@ void StartPLC_LOGIC(void *argument){
   for(;;)
   {
 	  //LOOP on inputs
+	  osMutexAcquire(PLC_IO_DatabaseHandle,portMAX_DELAY);
 	  for (int i=0;i < Digital_Inputs_count;i++) {
 		  PLC_IO_t* io= &PLC_Data_map.DIGITAL_INPUTS[i];
 		  io->value= HAL_GPIO_ReadPin(GPIOA, io->pinNumber); //port is hard coded-change
 	  }
+
 	  //implement analog reading later
+
+	  if(forceEnabled==1) { // check other analog types later
+		  for (int i=0;i < Digital_Inputs_count;i++) {
+			  PLC_IO_t* io= &PLC_Data_map.DIGITAL_INPUTS[i];
+			  if (io->force){
+				  io->value= io->forceValue;
+			  }
+		  }
+		  for (int i=0;i < Digital_memory_count;i++) {
+			  PLC_IO_t* io= &PLC_Data_map.INTERNAL_DIGITAL_MEM[i];
+			  if (io->force){
+				  io->value= io->forceValue;
+			  }
+		  }
+		  for (int i=0;i < Register_memory_count;i++) {
+			  PLC_IO_t* io= &PLC_Data_map.INTERNAL_REGISTER_MEM[i];
+			  if (io->force){
+				  io->value= io->forceValue;
+			  }
+		  }
+	  }
 
 	  //evaluate timers
 	  for (int h=0;h <Timer_count;h++){
@@ -202,11 +229,36 @@ void StartPLC_LOGIC(void *argument){
 	  loop();
 
 
+
+	  if(forceEnabled==1) { // check other analog types later
+		  for (int i=0;i < Digital_Outputs_count;i++) {
+			  PLC_IO_t* io= &PLC_Data_map.DIGITAL_OUTPUTS[i];
+			  if (io->force){
+				  io->value= io->forceValue;
+			  }
+		  }
+		  for (int i=0;i < Digital_memory_count;i++) {
+			  PLC_IO_t* io= &PLC_Data_map.INTERNAL_DIGITAL_MEM[i];
+			  if (io->force){
+				  io->value= io->forceValue;
+			  }
+		  }
+		  for (int i=0;i < Register_memory_count;i++) {
+			  PLC_IO_t* io= &PLC_Data_map.INTERNAL_REGISTER_MEM[i];
+			  if (io->force){
+				  io->value= io->forceValue;
+			  }
+		  }
+	  }
+
 	  //LOOP on outputs
 	  	  for (int j=0;j < Digital_Outputs_count;j++) {
 	  		  PLC_IO_t* o= &PLC_Data_map.DIGITAL_OUTPUTS[j];
 	  		  HAL_GPIO_WritePin(GPIOD, o->pinNumber, o->value); //port is hard coded-change
+
   }
+	  osMutexRelease(PLC_IO_DatabaseHandle);
+
 	  vTaskDelay(pdMS_TO_TICKS(PLC_SCAN_CYCLE)); //PLC delay
 
 }

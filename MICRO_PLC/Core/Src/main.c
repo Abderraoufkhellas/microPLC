@@ -60,14 +60,14 @@ const osThreadAttr_t defaultTask_attributes = {
 osThreadId_t PLC_LOGICHandle;
 const osThreadAttr_t PLC_LOGIC_attributes = {
   .name = "PLC_LOGIC",
-  .stack_size = 256 * 4,
+  .stack_size = 768 * 4,
   .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for DISPLAY_Task */
 osThreadId_t DISPLAY_TaskHandle;
 const osThreadAttr_t DISPLAY_Task_attributes = {
   .name = "DISPLAY_Task",
-  .stack_size = 256 * 4,
+  .stack_size = 768 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for ButtonQueue */
@@ -163,7 +163,7 @@ int main(void)
 
   /* Create the queue(s) */
   /* creation of ButtonQueue */
-  ButtonQueueHandle = osMessageQueueNew (8, sizeof(BUTTON_INPUT), &ButtonQueue_attributes);
+  ButtonQueueHandle = osMessageQueueNew (16, sizeof(BUTTON_INPUT), &ButtonQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -381,13 +381,13 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : Down_PushButton_Pin UP_PushButton_Pin */
   GPIO_InitStruct.Pin = Down_PushButton_Pin|UP_PushButton_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : Select_PushButton_Pin Back_PushButton_Pin */
   GPIO_InitStruct.Pin = Select_PushButton_Pin|Back_PushButton_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
@@ -510,8 +510,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     lastPressTick[index] = now;
 
     osMessageQueuePut(ButtonQueueHandle, &b, 0, 0);
-}
+
   /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.

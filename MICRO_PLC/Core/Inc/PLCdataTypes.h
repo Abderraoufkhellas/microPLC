@@ -65,12 +65,16 @@ typedef struct {
 	PLC_data_t type;
     uint16_t pinNumber;
     uint32_t value;  // HERE ALL values are uint32_t (even digital) Search for better solution!!!
+    uint8_t force;
+    uint32_t forceValue;
 } PLC_IO_t;
 
 typedef struct {
 	char handle[16];
 	PLC_data_t type;
 	uint32_t value; // HERE ALL values are uint32_t (even digital) Search for better solution!!!
+	uint8_t force;
+	uint32_t forceValue;
 } PLC_MEM_t;
 
 
@@ -100,7 +104,6 @@ typedef struct {
 	PLC_IO_t DIGITAL_INPUTS[MAX_DIGITAL_IO_VARIABLES];
 	PLC_IO_t DIGITAL_OUTPUTS[MAX_DIGITAL_IO_VARIABLES];
 	PLC_IO_t ANALOG_INPUTS[MAX_ANALOG_IO_VARIABLE ];
-	PLC_IO_t ANALOG_OUTPUTS[MAX_ANALOG_IO_VARIABLE ];
 	PLC_MEM_t INTERNAL_DIGITAL_MEM[MAX_DIGITAL_MEMORY_VARIABLES];
 	PLC_MEM_t INTERNAL_REGISTER_MEM[MAX_REGISTER_MEMORY_VARIABLES];
 	PLC_Timer_t PLC_TIMERS[MAX_TIMERS_CAPACITY];
