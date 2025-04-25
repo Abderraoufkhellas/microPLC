@@ -14,11 +14,14 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "cmsis_os.h"
-#define SCREEN_AUTO_REFRESH_MS 2000
-#define RT_VIEW_REFRESH 150
-#define MAIN_MENU_COUNT 2
-#define MAX_MENU_DEPTH 5
+#include "PLCdataTypes.h"
 
+
+#define SCREEN_AUTO_REFRESH_MS 2000
+#define RT_VIEW_REFRESH 50
+#define MAIN_MENU_COUNT 3
+#define MAX_MENU_DEPTH 5
+#define MAX_FIELDS 20
 
 #define MENU_X             10
 #define MENU_Y             20
@@ -36,6 +39,26 @@ typedef struct MenuItem {
 	void (*action)(void);
 }MenuItem;
 
+//RT data display fields
+typedef enum {
+	FDIGITAL,
+	FANALOG,
+	FMEM_BOOL,
+	FMEM_REG,
+	FTIMER
+} FIELD_t;
+
+
+
+//field struct
+
+typedef struct {
+	FIELD_t type;
+	void *ptr;
+	const char *name;
+	uint32_t min,max,step;
+} FieldDesc;
+
 
 //DISPLAY STATE MACHINE
 typedef enum {
@@ -44,6 +67,11 @@ typedef enum {
 	DISP_FORCE_VIEW
 }CURRENT_STATE;
 
+
+typedef enum {
+	FORCE_LIST,
+	FORCE_EDIT
+}ForceSubState;
 extern CURRENT_STATE Current_Display_State;
 
 

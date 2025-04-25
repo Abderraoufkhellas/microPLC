@@ -28,7 +28,7 @@ extern uint8_t Timer_count;
 
 //To check if Timers are used at all to not use ressources
 extern uint8_t TIMERS_USED;
-
+extern uint8_t forceEnabled;
 // MACROS FOR LOGIC FUNCTIONS
 #define OR ||
 #define AND &&

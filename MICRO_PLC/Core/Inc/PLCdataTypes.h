@@ -65,12 +65,16 @@ typedef struct {
 	PLC_data_t type;
     uint16_t pinNumber;
     uint32_t value;  // HERE ALL values are uint32_t (even digital) Search for better solution!!!
+    uint8_t force;
+    uint32_t forceValue;
 } PLC_IO_t;
 
 typedef struct {
 	char handle[16];
 	PLC_data_t type;
 	uint32_t value; // HERE ALL values are uint32_t (even digital) Search for better solution!!!
+	uint8_t force;
+	uint32_t forceValue;
 } PLC_MEM_t;
 
 

@@ -11,12 +11,16 @@
 #include "main.h"
 #include "PLCdataTypes.h"
 #include "PLClogic.h"
+#include "stdio.h"
 
 
 
 CURRENT_STATE Current_Display_State=DISP_MENU;
 
 
+//RT fields array
+static FieldDesc fields[MAX_FIELDS];
+static uint8_t fieldCount;
 
 
 //defining leaf functions
@@ -25,12 +29,19 @@ void switch_RT(void){
 	Current_Display_State=DISP_RT_VIEW;
 }
 
-void switch_Force(void){
+void enter_Force_mode(void){
 	Current_Display_State=DISP_FORCE_VIEW;
+	forceEnabled=1;
+}
+
+void exit_Force_mode(void){
+	Current_Display_State=DISP_MENU;
+	//forceEnabled=0;
 }
 
 //defining menus and items
-MenuItem MainMenu[]={{"REAL TIME DATA",NULL,0,switch_RT},{"FORCE DATA",NULL,0,NULL}};
+MenuItem DataMenu[]={{"REAL TIME DATA",NULL,0,switch_RT},{"FORCE DATA",NULL,0,enter_Force_mode}};
+MenuItem MainMenu[]={{"PLC STATUS",NULL,0,NULL},{"DATA",DataMenu,2,NULL},{"COMM STATUS",NULL,0,NULL}};
 
 
 
@@ -38,56 +49,74 @@ void display_init(void) {
 	ILI9341_Init();
 	ILI9341_SetRotation(SCREEN_VERTICAL_2);
 	ILI9341_FillScreen(COLOR_BG_NORMAL);
-	ILI9341_DrawText("Press a button...", FONT4, 55, 140, COLOR_TEXT, COLOR_BG_NORMAL);
+	ILI9341_DrawText("STARTING...", FONT4, 50, 130, GREEN, COLOR_BG_NORMAL);
 
 
 	Current_Display_State=DISP_MENU;
 }
+void BuildFieldList(void) {
+	fieldCount=0;
+	for (int i=0;i<Digital_Inputs_count &&fieldCount <MAX_FIELDS;i++) {
+		fields[fieldCount++]= (FieldDesc) {
+			.type= FDIGITAL,
+			.ptr=&PLC_Data_map.DIGITAL_INPUTS[i],
+			.name= PLC_Data_map.DIGITAL_INPUTS[i].handle,
+			.min=0, .max =1, .step=1
+		};
+	}
+	for (int j=0;j<Digital_Outputs_count &&fieldCount <MAX_FIELDS;j++) {
+			fields[fieldCount++]= (FieldDesc) {
+				.type= FDIGITAL,
+				.ptr=&PLC_Data_map.DIGITAL_OUTPUTS[j],
+				.name= PLC_Data_map.DIGITAL_OUTPUTS[j].handle,
+				.min=0, .max =1, .step=1
+			};
+		}
+	for (int k=0;k<Analog_Inputs_count &&fieldCount <MAX_FIELDS;k++) {
+				fields[fieldCount++]= (FieldDesc) {
+					.type= FANALOG,
+					.ptr=&PLC_Data_map.ANALOG_INPUTS[k],
+					.name= PLC_Data_map.ANALOG_INPUTS[k].handle,
+					.min=0, .max =65536, .step=10000
+				};
+			}
+	for (int l=0; l<Digital_memory_count &&fieldCount <MAX_FIELDS;l++) {
+				fields[fieldCount++]= (FieldDesc) {
+					.type= FMEM_BOOL,
+					.ptr=&PLC_Data_map.INTERNAL_DIGITAL_MEM[l],
+					.name= PLC_Data_map.INTERNAL_DIGITAL_MEM[l].handle,
+					.min=0, .max =1, .step=1
+				};
+			}
+	for (int m=0; m<Register_memory_count&&fieldCount <MAX_FIELDS;m++) {
+					fields[fieldCount++]= (FieldDesc) {
+						.type= FMEM_REG,
+						.ptr=&PLC_Data_map.INTERNAL_REGISTER_MEM[m],
+						.name= PLC_Data_map.INTERNAL_REGISTER_MEM[m].handle,
+						.min=0, .max =65536, .step=10000
+					};
+				}
+}
 
-void Display_PLC_DATA(void) {
+void Display_RT_DATA(void) {
 	char buf[32];
+	char val[32];
 	uint16_t y=10;
 	ILI9341_FillScreen(BLACK);
-	  for (int i = 0; i < Digital_Inputs_count; i++, y += MENU_LINE_HEIGHT) {
+	  for (int i = 0; i < fieldCount; i++, y += MENU_LINE_HEIGHT) {
 		  	osMutexAcquire(PLC_IO_DatabaseHandle,portMAX_DELAY);
-	        PLC_IO_t *io = &PLC_Data_map.DIGITAL_INPUTS[i];
-	        snprintf(buf, sizeof(buf), "%s: %u", io->handle, io->value);
+	        snprintf(buf, sizeof(buf), "%s:", fields[i].name);
+	        if (fields[i].type==FMEM_BOOL || fields[i].type==FMEM_REG) {
+		        snprintf(val, sizeof(val),"%lu",((PLC_MEM_t*)fields[i].ptr)->value);
+	        }
+	        else {
+	        	snprintf(val, sizeof(val),"%lu",((PLC_IO_t*)fields[i].ptr)->value);
+	        }
 	        osMutexRelease(PLC_IO_DatabaseHandle);
-
 	        ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
+	        ILI9341_DrawText(val, FONT4, MENU_X+150, y, COLOR_TEXT, COLOR_HIGHLIGHT);
+
 	    }
-	  for (int j = 0; j < Digital_Outputs_count; j++, y += MENU_LINE_HEIGHT) {
-		  	osMutexAcquire(PLC_IO_DatabaseHandle,portMAX_DELAY);
-			PLC_IO_t *io = &PLC_Data_map.DIGITAL_OUTPUTS[j];
-			snprintf(buf, sizeof(buf), "%s: %u", io->handle, io->value);
-	        osMutexRelease(PLC_IO_DatabaseHandle);
-
-			ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
-		}
-	  for (int k = 0; k < Analog_Inputs_count; k++, y += MENU_LINE_HEIGHT) {
-		  	osMutexAcquire(PLC_IO_DatabaseHandle,portMAX_DELAY);
-			PLC_IO_t *io = &PLC_Data_map.ANALOG_INPUTS[k];
-			snprintf(buf, sizeof(buf), "%s: %u", io->handle, io->value);
-	        osMutexRelease(PLC_IO_DatabaseHandle);
-			ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
-
-		}
-	  for (int l = 0; l < Digital_memory_count; l++, y += MENU_LINE_HEIGHT) {
-		  	osMutexAcquire(PLC_IO_DatabaseHandle,portMAX_DELAY);
-			PLC_MEM_t *io = &PLC_Data_map.INTERNAL_DIGITAL_MEM[l];
-			snprintf(buf, sizeof(buf), "%s: %u", io->handle, io->value);
-	        osMutexRelease(PLC_IO_DatabaseHandle);
-			ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
-		}
-	  for (int m = 0; m < Register_memory_count; m++, y += MENU_LINE_HEIGHT) {
-		  	osMutexAcquire(PLC_IO_DatabaseHandle,portMAX_DELAY);
-			PLC_MEM_t *io = &PLC_Data_map.INTERNAL_REGISTER_MEM[m];
-			snprintf(buf, sizeof(buf), "%s: %u", io->handle, io->value);
-	        osMutexRelease(PLC_IO_DatabaseHandle);
-			ILI9341_DrawText(buf, FONT4, MENU_X, y, COLOR_TEXT, COLOR_BG_NORMAL);
-
-		}
-
 
 }
 
@@ -110,6 +139,12 @@ void StartDISPLAY_Task(void *argument)
 	sizeStack[0]=MAIN_MENU_COUNT;
 
 	display_init();
+	BuildFieldList();
+
+	static ForceSubState fstate=FORCE_LIST;
+	static uint8_t forceidx=0;
+	static uint32_t editValue=0;
+
   /* Infinite loop */
   for(;;)
   {
@@ -147,6 +182,9 @@ void StartDISPLAY_Task(void *argument)
 				 idx=0;
 			 }
 			 break;
+		 default :
+			 break;
+		 }
 		 }
 		 ILI9341_FillScreen(BLACK);
 		 MenuItem *cur= MenuStack[depth];
@@ -163,7 +201,7 @@ void StartDISPLAY_Task(void *argument)
 
 			 }
 		 }
-		 }
+
 
 	 	 break;
 	 case DISP_RT_VIEW:
@@ -174,17 +212,137 @@ void StartDISPLAY_Task(void *argument)
 				Current_Display_State=DISP_MENU;
 				idx=0;
 				break;
+			default:
+				break;
 			}
 
 		}
-		 Display_PLC_DATA();
+		 Display_RT_DATA();
+		 break;
+	 case DISP_FORCE_VIEW:
+		 if(osMessageQueueGet(ButtonQueueHandle, &btn, NULL, 1000)==osOK){
+			if (fstate==FORCE_LIST){
+				switch(btn) {
+				case UP_BUTTON:
+					forceidx=(forceidx +fieldCount-1) % fieldCount;
+					break;
+				case DOWN_BUTTON:
+					forceidx=(forceidx +1 ) % fieldCount;
+					break;
+				case SELECT_BUTTON:
+					if (fields[forceidx].type==FMEM_BOOL || fields[forceidx].type==FMEM_REG) {
+						editValue=((PLC_MEM_t*)fields[forceidx].ptr)->value;
+
+					}
+					else {
+						editValue=((PLC_IO_t*)fields[forceidx].ptr)->value;
+
+					}
+					fstate= FORCE_EDIT;
+					break;
+				case BACK_BUTTON:
+					exit_Force_mode();
+					idx=0;
+					break;
+
+				}
+			}
+			else if (fstate==FORCE_EDIT) {
+				FieldDesc *f=&fields[forceidx];
+
+
+				switch(btn) {
+				case UP_BUTTON:
+					if (editValue +(f->step) <= f->max)
+						editValue += f->step;
+					break;
+				case DOWN_BUTTON:
+					if (editValue-(f->step) >= f->min)
+						editValue -= f->step;
+					break;
+				case SELECT_BUTTON:
+					if (f->type==FMEM_BOOL || f->type==FMEM_REG) {
+						PLC_MEM_t *io= (PLC_MEM_t*)f->ptr;
+				        if (io->force) {
+				            // Already forced → toggle it off
+				            io->force = false;
+				            fstate = FORCE_LIST;
+				            break;
+				        }
+				    	io->force = 1;
+						io->forceValue = editValue;
+					}
+
+					else {
+				        PLC_IO_t *io = (PLC_IO_t*)f->ptr;
+				        if (io->force) {
+				            io->force = 0;
+				            fstate = FORCE_LIST;
+				            break;
+				        }
+				        io->force = 1;
+				        io->forceValue = editValue;
+					}
+					break;
+
+				case BACK_BUTTON:
+					fstate=FORCE_LIST;
+
+					break;
+				}
+			}
+		 }
+		 ILI9341_FillScreen(COLOR_BG_NORMAL);
+		 if (fstate==FORCE_LIST&& forceEnabled==1){
+			 char Lbuf[30];
+			 for (uint8_t i = 0, y = 20; i < fieldCount; i++, y += MENU_LINE_HEIGHT)
+				{
+					uint8_t sel = (i == forceidx);
+					if (sel==1 && ((PLC_IO_t*)fields[i].ptr)->force==1) {
+						ILI9341_DrawRectangle(MENU_X, y-2, 220, MENU_LINE_HEIGHT, WHITE);
+				        snprintf(Lbuf, sizeof(Lbuf),"*f*  %s",fields[i].name);
+						ILI9341_DrawText(Lbuf, FONT4, MENU_X+4, y, BLACK, WHITE);
+					}
+					else if(sel==0 && ((PLC_IO_t*)fields[i].ptr)->force==1 ) {
+
+						snprintf(Lbuf, sizeof(Lbuf),"*f*  %s",fields[i].name);
+						ILI9341_DrawText(Lbuf, FONT4, MENU_X+4, y, WHITE, BLACK);
+					}
+					else if (sel==1 && ((PLC_IO_t*)fields[i].ptr)->force==0 ){
+						ILI9341_DrawRectangle(MENU_X, y-2, 220, MENU_LINE_HEIGHT, WHITE);
+						snprintf(Lbuf, sizeof(Lbuf),"    %s",fields[i].name);
+						ILI9341_DrawText(Lbuf, FONT4, MENU_X+4, y, BLACK, WHITE);
+					}
+					else {
+						snprintf(Lbuf, sizeof(Lbuf),"    %s",fields[i].name);
+						ILI9341_DrawText(Lbuf, FONT4, MENU_X+4, y, WHITE, BLACK);
+					}
+				}
+		 }
+		 else if (fstate==FORCE_EDIT && forceEnabled==1){
+			FieldDesc *f = &fields[forceidx];
+			char buf[16];
+			uint16_t y = 40;
+
+			ILI9341_DrawText("Forcing:", FONT4, MENU_X, y, GREEN, BLACK);
+			ILI9341_DrawText(f->name,    FONT4, MENU_X, y+20, WHITE, BLACK);
+
+			// value box
+			snprintf(buf, sizeof(buf), "%lu", editValue);
+			ILI9341_DrawText(buf, FONT4, MENU_X+4, y+50, GREEN, BLACK);
+
+			// instructions
+			ILI9341_DrawText("UP/DOWN: change value", FONT3, MENU_X, y+90, GREEN, BLACK);
+			ILI9341_DrawText("SEL: commit/ cancel force",FONT3, MENU_X, y+110, GREEN, BLACK);
+			ILI9341_DrawText("BACK: quit",       FONT3, MENU_X, y+130, GREEN, BLACK);
+		 }
+
+
+	 default :
 		 break;
 	 }
 
 
+	 }
+  }
 
-
-
- }
-
-}
