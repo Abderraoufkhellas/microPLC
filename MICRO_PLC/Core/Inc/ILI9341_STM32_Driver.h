@@ -2,7 +2,7 @@
 #define ILI9341_STM32_DRIVER_H
 
 #include "stm32f4xx_hal.h"
-
+#include "main.h"
 extern SPI_HandleTypeDef hspi1;
 
 #define ILI9341_SCREEN_HEIGHT 	240
@@ -10,12 +10,12 @@ extern SPI_HandleTypeDef hspi1;
 
 /* PIN Configuration */
 #define HSPI_INSTANCE			&hspi1
-#define LCD_CS_PORT				GPIOA
-#define LCD_CS_PIN				GPIO_PIN_4
-#define LCD_DC_PORT				GPIOC
-#define LCD_DC_PIN				GPIO_PIN_5
-#define	LCD_RST_PORT			GPIOC
-#define	LCD_RST_PIN				GPIO_PIN_4
+#define LCD_CS_PORT				DISPLAY_CS_GPIO_Port
+#define LCD_CS_PIN				DISPLAY_CS_Pin
+#define LCD_DC_PORT				DISPLAY_DC_GPIO_Port
+#define LCD_DC_PIN				DISPLAY_DC_Pin
+#define	LCD_RST_PORT			DISPLAY_RST_GPIO_Port
+#define	LCD_RST_PIN				DISPLAY_RST_Pin
 
 #define BURST_MAX_SIZE 			500
 #define BLACK      				0x0000

@@ -46,6 +46,7 @@ MenuItem MainMenu[]={{"PLC STATUS",NULL,0,NULL},{"DATA",DataMenu,2,NULL},{"COMM 
 
 
 void display_init(void) {
+	HAL_GPIO_WritePin(DISPLAY_LED_GPIO_Port, DISPLAY_LED_Pin, GPIO_PIN_SET);
 	ILI9341_Init();
 	ILI9341_SetRotation(SCREEN_VERTICAL_2);
 	ILI9341_FillScreen(COLOR_BG_NORMAL);

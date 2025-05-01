@@ -60,8 +60,6 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define PH1_OSC_OUT_Pin GPIO_PIN_1
 #define PH1_OSC_OUT_GPIO_Port GPIOH
-#define BOOT1_Pin GPIO_PIN_2
-#define BOOT1_GPIO_Port GPIOB
 #define Down_PushButton_Pin GPIO_PIN_14
 #define Down_PushButton_GPIO_Port GPIOB
 #define Down_PushButton_EXTI_IRQn EXTI15_10_IRQn
@@ -78,6 +76,14 @@ void Error_Handler(void);
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin GPIO_PIN_14
 #define SWCLK_GPIO_Port GPIOA
+#define DISPLAY_CS_Pin GPIO_PIN_12
+#define DISPLAY_CS_GPIO_Port GPIOC
+#define DISPLAY_RST_Pin GPIO_PIN_0
+#define DISPLAY_RST_GPIO_Port GPIOD
+#define DISPLAY_DC_Pin GPIO_PIN_1
+#define DISPLAY_DC_GPIO_Port GPIOD
+#define DISPLAY_LED_Pin GPIO_PIN_2
+#define DISPLAY_LED_GPIO_Port GPIOD
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
 
